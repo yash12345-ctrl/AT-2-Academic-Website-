@@ -50,15 +50,113 @@ app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// -------------------- AUTH & COOKIE HELPERS -------------------- //
+
+// Parse cookies from request header
+function parseCookies(req) {
+  const list = {};
+  const cookieHeader = req.headers?.cookie;
+  if (!cookieHeader) return list;
+
+  cookieHeader.split(';').forEach(cookie => {
+    let [name, ...rest] = cookie.split('=');
+    name = name?.trim();
+    if (!name) return;
+    const value = rest.join('=').trim();
+    if (!value) return;
+    try {
+      list[name] = decodeURIComponent(value);
+    } catch (e) {
+      list[name] = value;
+    }
+  });
+
+  return list;
+}
+
+// Retrieve student credentials from Body, Query, or Session Cookie
+function getStudentAuth(req) {
+  let id = req.body?.id || req.body?.studentId || req.query?.id || req.query?.studentId || '';
+  let password = req.body?.password || req.query?.password || '';
+  let name = req.body?.name || req.body?.studentName || req.query?.name || req.query?.studentName || '';
+
+  if (typeof id === 'string') id = id.trim();
+  if (typeof password === 'string') password = password.trim();
+  if (typeof name === 'string') name = name.trim();
+
+  // If missing from request body/query, fall back to persistent student_auth cookie
+  if (!id || !password) {
+    const cookies = parseCookies(req);
+    if (cookies.student_auth) {
+      try {
+        const authData = JSON.parse(cookies.student_auth);
+        id = id || authData.id || '';
+        password = password || authData.password || '';
+        name = name || authData.name || '';
+      } catch (e) {
+        console.warn('⚠️ Failed to parse student_auth cookie:', e.message);
+      }
+    }
+  }
+
+  return { id, password, name };
+}
+
+// Set persistent student authentication session cookie
+function setStudentAuthCookie(res, auth) {
+  const cookieVal = encodeURIComponent(JSON.stringify({
+    id: auth.id,
+    password: auth.password,
+    name: auth.name
+  }));
+  // Valid for 30 days, SameSite=Lax ensures cookie is sent on refreshes and redirects
+  res.setHeader('Set-Cookie', `student_auth=${cookieVal}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`);
+}
+
+// Clear authentication cookie (logout)
+function clearStudentAuthCookie(res) {
+  res.setHeader('Set-Cookie', 'student_auth=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT');
+}
+
+// Convert timetable time slot (e.g., "8:00 - 8:50", "1:25 - 2:15") to minutes for chronological sorting
+function convertToMinutes(timeRange) {
+  if (!timeRange || typeof timeRange !== 'string' || !timeRange.includes('-')) return 0;
+  const startTime = timeRange.split('-')[0].trim();
+  const parts = startTime.split(':');
+  if (parts.length < 2) return 0;
+  let hour = parseInt(parts[0], 10);
+  let minute = parseInt(parts[1], 10);
+  if (isNaN(hour)) hour = 0;
+  if (isNaN(minute)) minute = 0;
+  if (hour < 8) hour += 12; // Handle afternoon hours
+  return hour * 60 + minute;
+}
+
 // -------------------- ROUTES -------------------- //
 
-// ✅ Root route: Serve login page first
+// ✅ Root route: Serve login page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// ✅ Serve login page
+// ✅ GET /login: If already authenticated redirect to profile, else serve login page
+app.get('/login', (req, res) => {
+  const auth = getStudentAuth(req);
+  if (auth.id && auth.password) {
+    return res.redirect(`/student-profile?name=${encodeURIComponent(auth.name || '')}&id=${encodeURIComponent(auth.id)}`);
+  }
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// ✅ Logout route: Clear session and redirect to login
+app.get('/logout', (req, res) => {
+  clearStudentAuthCookie(res);
+  res.redirect('/');
+});
+
+// ✅ Serve login page & clear cookie on explicit visit
 app.get('/login-page', (req, res) => {
+  clearStudentAuthCookie(res);
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
@@ -138,119 +236,93 @@ app.post('/teacher-login', (req, res) => {
 });
 
 
-// ✅ Student login and dashboard with attendance stats
-// This is your login route
+// ✅ Student login: Authenticates, sets session cookie, and redirects (Post/Redirect/Get)
 app.post('/login', (req, res) => {
-  const { id, password } = req.body;
-  const uploadsPath = path.join(__dirname, 'public/uploads');
-  const today = new Date().toISOString().split('T')[0];
+  const id = (req.body?.id || '').trim();
+  const password = (req.body?.password || '').trim();
 
-  // Step 1: Authenticate student
-  const studentQuery = 'SELECT name FROM students WHERE id = ? AND password = ?';
+  if (!id || !password) {
+    return res.status(400).send(`
+      <div style="font-family: sans-serif; text-align: center; padding: 50px;">
+        <h2 style="color: #ef4444;">❌ Missing Credentials</h2>
+        <p>Please enter both your Student ID and password.</p>
+        <a href="/" style="display: inline-block; margin-top: 15px; padding: 10px 22px; background: #4f46e5; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">Back to Login</a>
+      </div>
+    `);
+  }
+
+  // Authenticate student against database
+  const studentQuery = 'SELECT id, name FROM students WHERE id = ? AND password = ?';
   db.get(studentQuery, [id, password], (err, student) => {
     if (err) {
       console.error('❌ Login error:', err.message);
       return res.status(500).send('Internal server error');
     }
 
-    if (!student) return res.send('❌ Invalid ID or password');
+    if (!student) {
+      return res.status(401).send(`
+        <div style="font-family: sans-serif; text-align: center; padding: 50px;">
+          <h2 style="color: #ef4444;">❌ Invalid Student ID or Password</h2>
+          <p>The student ID or password you entered is incorrect.</p>
+          <a href="/" style="display: inline-block; margin-top: 15px; padding: 10px 22px; background: #4f46e5; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">Try Again</a>
+        </div>
+      `);
+    }
 
-    // Step 2: Get today's day order
-    db.get('SELECT day_order FROM day_order_mapping WHERE date = ?', [today], (err2, row) => {
-      const todayOrder = row?.day_order || 'Not Set';
+    // Set persistent session cookie so refresh and navigation work seamlessly
+    setStudentAuthCookie(res, { id: student.id, password, name: student.name });
 
-      // Step 3: Get today's subjects sorted by time
-      db.all(`
-        SELECT time_slot, subject FROM timetable
-        WHERE student_name = ? AND day = ?
-        ORDER BY time_slot
-      `, [student.name, todayOrder], (err3, timetableRows) => {
-        if (err3) {
-          console.error('❌ Error fetching timetable:', err3);
-          return res.status(500).send('Error fetching timetable');
-        }
-
-        // Step 4: Load images for student
-        fs.readdir(uploadsPath, (err4, files) => {
-          const images = (!err4 && files) ? files.map(file => '/uploads/' + file) : [];
-
-
-          // 🔁 Convert time to sortable number (in minutes)
-          function convertToMinutes(timeRange) {
-            const [startTime] = timeRange.split(" - ");
-            let [hour, minute] = startTime.split(":").map(Number);
-
-            if (hour < 8) hour += 12; // Handle PM assumption
-            return hour * 60 + minute;
-          }
-
-          // 🔃 Sort subjects by time
-          const sortedSchedule = timetableRows.sort((a, b) => {
-            return convertToMinutes(a.time_slot) - convertToMinutes(b.time_slot);
-          });
-
-          // ✅ Step 5: Fetch internships before rendering
-          db.all('SELECT * FROM internships ORDER BY id DESC', (err5, internshipRows) => {
-            if (err5) {
-              console.error("❌ Error fetching internships:", err5.message);
-              return res.status(500).send("Failed to load internships");
-            }
-
-            db.all('SELECT * FROM hackathons ORDER BY deadline ASC', (err6, hackathons) => {
-              if (err6) {
-                console.error("❌ Error fetching hackathons:", err6.message);
-                return res.status(500).send("Failed to load hackathons");
-              }
-
-              res.render('student_profile', {
-                name: student.name,
-                id,
-                password,
-                images,
-                dayOrder: todayOrder,
-                todaySubjects: sortedSchedule,
-                internships: internshipRows,
-                hackathons
-              });
-            });
-          });
-        });
-      });
-    });
+    // Post/Redirect/Get pattern: redirect to /student-profile so browser URL changes and refreshes cleanly
+    return res.redirect(`/student-profile?name=${encodeURIComponent(student.name)}&id=${encodeURIComponent(student.id)}`);
   });
 });
 
+// ✅ Student dashboard handler supporting both GET and POST with session cookie persistence
+const handleStudentDashboard = (req, res) => {
+  const auth = getStudentAuth(req);
+  const id = auth.id;
+  const password = auth.password;
 
-app.post('/student-dashboard', (req, res) => {
-  const { id, password } = req.body;
+  if (!id) {
+    return res.redirect('/');
+  }
 
-  const studentQuery = 'SELECT name FROM students WHERE id = ? AND password = ?';
-  db.get(studentQuery, [id, password], (err, student) => {
-    if (err || !student) return res.send('Invalid login info');
+  const studentQuery = 'SELECT name FROM students WHERE id = ?';
+  db.get(studentQuery, [id], (err, student) => {
+    if (err || !student) {
+      console.error('❌ Error finding student for dashboard:', err?.message);
+      return res.redirect('/');
+    }
 
     const subjectQuery = `
-        SELECT subject_name AS name, subject_code AS code, subject_type AS type
-        FROM subjects WHERE student_id = ?
-      `;
+      SELECT subject_name AS name, subject_code AS code, subject_type AS type
+      FROM subjects WHERE student_id = ?
+    `;
 
-    db.all(subjectQuery, [id], (err, subjects) => {
-      if (err) return res.status(500).send('Error loading dashboard');
+    db.all(subjectQuery, [id], (err2, subjects) => {
+      if (err2) {
+        console.error('❌ Error fetching subjects:', err2.message);
+        return res.status(500).send('Error loading dashboard');
+      }
 
       const statsQuery = `
-          SELECT subject_name, 
-                COUNT(*) AS total, 
-                SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) AS present,
-                SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) AS absent
-          FROM attendance 
-          WHERE student_id = ?
-          GROUP BY subject_name
-        `;
+        SELECT subject_name, 
+              COUNT(*) AS total, 
+              SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) AS present,
+              SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) AS absent
+        FROM attendance 
+        WHERE student_id = ?
+        GROUP BY subject_name
+      `;
 
-      db.all(statsQuery, [id], (err, attendanceStats) => {
-        if (err) return res.status(500).send('Error loading stats');
+      db.all(statsQuery, [id], (err3, attendanceStats) => {
+        if (err3) {
+          console.error('❌ Error fetching attendance stats:', err3.message);
+          return res.status(500).send('Error loading stats');
+        }
 
-        const mergedSubjects = subjects.map(sub => {
-          const stat = attendanceStats.find(s => s.subject_name === sub.name) || {
+        const mergedSubjects = (subjects || []).map(sub => {
+          const stat = (attendanceStats || []).find(s => s.subject_name === sub.name) || {
             total: 0, present: 0, absent: 0
           };
           return { ...sub, ...stat };
@@ -260,12 +332,15 @@ app.post('/student-dashboard', (req, res) => {
           name: student.name,
           subjects: mergedSubjects,
           id: id,
-          password: password
+          password: password || ''
         });
       });
     });
   });
-});
+};
+
+app.get('/student-dashboard', handleStudentDashboard);
+app.post('/student-dashboard', handleStudentDashboard);
 
 
 // ✅ Serve login1.html for teacher login page
@@ -466,17 +541,21 @@ app.post('/submit-marks', (req, res) => {
 });
 
 
-// === Route to fetch marks for a student ===
-app.post('/student-marks', (req, res) => {
-  const studentId = req.body.studentId;
+// === Route to fetch marks for a student (supports both GET and POST with session cookie) ===
+const handleStudentMarks = (req, res) => {
+  const auth = getStudentAuth(req);
+  const studentId = auth.id;
+  const password = auth.password;
 
-
+  if (!studentId) {
+    return res.redirect('/');
+  }
 
   // Step 1: Get student name using ID
   db.get('SELECT name FROM students WHERE id = ?', [studentId], (err, student) => {
     if (err || !student) {
       console.error("❌ Error finding student:", err?.message);
-      return res.status(404).send("Student not found");
+      return res.redirect('/');
     }
 
     // Step 2: Get marks from marks_scores
@@ -495,9 +574,8 @@ app.post('/student-marks', (req, res) => {
 
       // Step 3: Group marks by subject
       const grouped = {};
-      rows.forEach(row => {
+      (rows || []).forEach(row => {
         if (!row.subject || !row.test_name || row.marks == null || row.totalMarks == null) {
-          console.warn("⚠️ Skipping incomplete mark entry:", row);
           return;
         }
 
@@ -515,12 +593,15 @@ app.post('/student-marks', (req, res) => {
       res.render('marks1', {
         name: student.name,
         id: studentId,
-        password: req.body.password,
+        password: password || '',
         groupedMarks: grouped
       });
     });
   });
-});
+};
+
+app.get('/student-marks', handleStudentMarks);
+app.post('/student-marks', handleStudentMarks);
 
 
 
@@ -567,86 +648,119 @@ app.post('/submit-timetable', (req, res) => {
 
 
 const handleTimetableView = (req, res) => {
-  const studentName = req.body?.studentName || req.body?.name || req.query?.studentName || req.query?.name || '';
-  const id = req.body?.id || req.query?.id || '';
-  const password = req.body?.password || req.query?.password || '';
+  const auth = getStudentAuth(req);
+  const id = auth.id;
+  const password = auth.password;
+  let studentName = auth.name;
 
-  const query = `
-      SELECT day, time_slot, subject 
-      FROM timetable 
-      WHERE student_name = ?
-    `;
+  if (!id && !studentName) {
+    return res.redirect('/');
+  }
 
-  db.all(query, [studentName], (err, rows) => {
-    if (err) {
-      console.error('❌ Error fetching timetable:', err.message);
-      return res.status(500).send('Error loading timetable');
-    }
+  const renderTimetable = (name) => {
+    const query = `
+        SELECT day, time_slot, subject 
+        FROM timetable 
+        WHERE student_name = ?
+      `;
 
-    res.render('timetable', {
-      student: { name: studentName },
-      timetable: rows || [],
-      name: studentName,
-      id: id,
-      password: password
+    db.all(query, [name], (err, rows) => {
+      if (err) {
+        console.error('❌ Error fetching timetable:', err.message);
+        return res.status(500).send('Error loading timetable');
+      }
+
+      res.render('timetable', {
+        student: { name: name },
+        timetable: rows || [],
+        name: name,
+        id: id || '',
+        password: password || ''
+      });
     });
-  });
+  };
+
+  if (!studentName && id) {
+    db.get('SELECT name FROM students WHERE id = ?', [id], (err, row) => {
+      renderTimetable(row?.name || '');
+    });
+  } else {
+    renderTimetable(studentName);
+  }
 };
 
 app.post('/view-timetable', handleTimetableView);
 app.get('/view-timetable', handleTimetableView);
 
 const handleStudentProfile = (req, res) => {
-  const name = req.query?.name || req.body?.name || '';
-  const id = req.query?.id || req.body?.id || '';
-  const password = req.query?.password || req.body?.password || '';
-  const uploadsPath = path.join(__dirname, 'public/uploads');
-  const today = new Date().toISOString().split('T')[0];
+  const auth = getStudentAuth(req);
+  const id = auth.id;
+  const password = auth.password;
+  let name = auth.name;
 
-  db.get('SELECT day_order FROM day_order_mapping WHERE date = ?', [today], (err, row) => {
-    const todayOrder = row?.day_order || 'Not Set';
+  if (!id) {
+    return res.redirect('/');
+  }
 
-    db.all(`
-        SELECT time_slot, subject FROM timetable
-        WHERE student_name = ? AND day = ?
-        ORDER BY time_slot
-      `, [name, todayOrder], (err2, timetableRows) => {
-      if (err2) {
-        console.error('❌ Error fetching today\'s timetable:', err2);
-        return res.status(500).send('Error fetching timetable');
-      }
+  const renderProfile = (studentName) => {
+    const uploadsPath = path.join(__dirname, 'public/uploads');
+    const today = new Date().toISOString().split('T')[0];
 
-      fs.readdir(uploadsPath, (err, files) => {
-        const images = (!err && files) ? files.map(file => '/uploads/' + file) : [];
+    db.get('SELECT day_order FROM day_order_mapping WHERE date = ?', [today], (err, row) => {
+      const todayOrder = row?.day_order || 'Not Set';
 
-        // Add internships query
-        db.all('SELECT * FROM internships ORDER BY id DESC', (err, internshipRows) => {
-          if (err) {
-            console.error("❌ Error fetching internships:", err.message);
-            return res.status(500).send("Failed to load internships");
-          }
+      db.all(`
+          SELECT time_slot, subject FROM timetable
+          WHERE student_name = ? AND day = ?
+          ORDER BY time_slot
+        `, [studentName, todayOrder], (err2, timetableRows) => {
+        if (err2) {
+          console.error('❌ Error fetching today\'s timetable:', err2);
+          timetableRows = [];
+        }
 
-          db.all('SELECT * FROM hackathons ORDER BY deadline ASC', (err2, hackathons) => {
-            if (err2) {
-              console.error("❌ Error fetching hackathons:", err2.message);
-              return res.status(500).send("Failed to load hackathons");
+        const sortedSchedule = (timetableRows || []).sort((a, b) => {
+          return convertToMinutes(a.time_slot) - convertToMinutes(b.time_slot);
+        });
+
+        fs.readdir(uploadsPath, (err3, files) => {
+          const images = (!err3 && files) ? files.map(file => '/uploads/' + file) : [];
+
+          db.all('SELECT * FROM internships ORDER BY id DESC', (err4, internshipRows) => {
+            if (err4) {
+              console.error("❌ Error fetching internships:", err4.message);
             }
 
-            res.render('student_profile', {
-              name,
-              id,
-              password,
-              images,
-              dayOrder: todayOrder,
-              todaySubjects: timetableRows || [],
-              internships: internshipRows || [],
-              hackathons: hackathons || []
+            db.all('SELECT * FROM hackathons ORDER BY deadline ASC', (err5, hackathons) => {
+              if (err5) {
+                console.error("❌ Error fetching hackathons:", err5.message);
+              }
+
+              res.render('student_profile', {
+                name: studentName,
+                id,
+                password: password || '',
+                images,
+                dayOrder: todayOrder,
+                todaySubjects: sortedSchedule,
+                internships: internshipRows || [],
+                hackathons: hackathons || []
+              });
             });
           });
         });
       });
     });
-  });
+  };
+
+  if (!name) {
+    db.get('SELECT name FROM students WHERE id = ?', [id], (err, row) => {
+      if (err || !row) return res.redirect('/');
+      renderProfile(row.name);
+    });
+  } else {
+    renderProfile(name);
+  }
 };
 
 app.get('/student-profile', handleStudentProfile);
@@ -840,9 +954,10 @@ const handleInternshipsView = (req, res) => {
       return res.status(500).send("Failed to load internships");
     }
 
-    const name = req.body?.name || req.query?.name || 'Student';
-    const id = req.body?.id || req.query?.id || '';
-    const password = req.body?.password || req.query?.password || '';
+    const auth = getStudentAuth(req);
+    const name = auth.name || 'Student';
+    const id = auth.id || '';
+    const password = auth.password || '';
 
     res.render('internships', {
       internships: rows || [],
@@ -865,9 +980,10 @@ const handleHackathonsView = (req, res) => {
       return res.status(500).send('Internal Server Error');
     }
 
-    const name = req.body?.name || req.query?.name || 'Student';
-    const id = req.body?.id || req.query?.id || '';
-    const password = req.body?.password || req.query?.password || '';
+    const auth = getStudentAuth(req);
+    const name = auth.name || 'Student';
+    const id = auth.id || '';
+    const password = auth.password || '';
 
     res.render('hackathons', {
       hackathons: rows || [],
@@ -1038,13 +1154,18 @@ app.post('/submit-hackathon', (req, res) => {
 
 
 
-app.post('/student-info', (req, res) => {
-  const { id } = req.body;
+const handleStudentInfo = (req, res) => {
+  const auth = getStudentAuth(req);
+  const id = auth.id;
+
+  if (!id) {
+    return res.redirect('/');
+  }
 
   db.get('SELECT * FROM students WHERE id = ?', [id], (err, student) => {
     if (err || !student) {
       console.error('❌ Error fetching student:', err?.message);
-      return res.status(404).send('Student not found');
+      return res.redirect('/');
     }
 
     res.render('student_info', {
@@ -1056,7 +1177,16 @@ app.post('/student-info', (req, res) => {
       course: student.course
     });
   });
-});
+};
+
+app.get('/student-info', handleStudentInfo);
+app.post('/student-info', handleStudentInfo);
+
+// Safety handlers for GET requests to teacher / secondary routes to prevent 'Cannot GET' on page refresh
+app.get('/teacher-login', (req, res) => res.redirect('/login1'));
+app.get('/marks-login', (req, res) => res.redirect('/marks_login.html'));
+app.get('/upload-images', (req, res) => res.redirect('/student-profile'));
+app.get('/mark-attendance', (req, res) => res.redirect('/login1'));
 
 
 
