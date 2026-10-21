@@ -1,7 +1,6 @@
 # Environment Variables & Secrets (Keep your Neon credentials safe!)
 .env
-.env.local
-.env.*.local
+.env*
 
 # Dependency directories
 node_modules/
