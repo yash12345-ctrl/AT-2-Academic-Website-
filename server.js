@@ -147,7 +147,7 @@ app.post('/login', (req, res) => {
       db.all(`
         SELECT time_slot, subject FROM timetable
         WHERE student_name = ? AND day = ?
-        ORDER BY TIME(SUBSTR(time_slot, 1, INSTR(time_slot, ' ') - 1))
+        ORDER BY time_slot
       `, [student.name, todayOrder], (err3, timetableRows) => {
         if (err3) {
           console.error('❌ Error fetching timetable:', err3);
@@ -156,12 +156,7 @@ app.post('/login', (req, res) => {
 
         // Step 4: Load images for student
         fs.readdir(uploadsPath, (err4, files) => {
-          if (err4) {
-            console.error('❌ Error reading uploads directory:', err4);
-            return res.status(500).send('Error loading images');
-          }
-
-          const images = files.map(file => '/uploads/' + file);
+          const images = (!err4 && files) ? files.map(file => '/uploads/' + file) : [];
 
 
           // 🔁 Convert time to sortable number (in minutes)
