@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Images</title>
+</head>
+<body>
+  <h2>Upload Images</h2>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="hidden" name="name" value="Yash Tomar">
+    <input type="hidden" name="id" value="1234">
+    <input type="hidden" name="password" value="abc123">
+
+    <input type="file" name="images" accept="image/*" multiple required>
+    <br><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="uploadMsg" style="color: green; font-weight: bold;"></p>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', function (e) {
+      e.preventDefault(); // prevent page reload
+
+      const form = e.target;
+      const formData = new FormData(form);
+
+      fetch('/upload-images', {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (response.ok) {
+            document.getElementById('uploadMsg').innerText = '✅ Images uploaded successfully!';
+            form.reset(); // reset form inputs
+          } else {
+            document.getElementById('uploadMsg').innerText = '❌ Upload failed.';
+          }
+        })
+        .catch(error => {
+          document.getElementById('uploadMsg').innerText = '❌ Upload error.';
+          console.error('Error uploading:', error);
+        });
+    });
+  </script>
+</body>
+</html>

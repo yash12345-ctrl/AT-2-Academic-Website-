@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Day Order Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+
+    select,
+    input[type="date"],
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .section {
+      margin-top: 30px;
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+
+    .info-box {
+      background: #e9f5ff;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .today-order {
+      text-align: center;
+      margin-bottom: 20px;
+      background: #dfffe0;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ✅ Today's Day Order Display -->
+  <div class="today-order">
+    <strong>Today's Day Order:</strong>
+    <span id="dayOrderText">Loading...</span>
+  </div>
+
+  <div class="container">
+    <h2>Select Today's Day Order</h2>
+    <form id="dayOrderForm">
+      <label for="todayDayOrder">Today's Day Order:</label>
+      <select id="todayDayOrder" required>
+        <option value="">-- Select Day Order --</option>
+        <option value="Day 1">Day 1</option>
+        <option value="Day 2">Day 2</option>
+        <option value="Day 3">Day 3</option>
+        <option value="Day 4">Day 4</option>
+        <option value="Day 5">Day 5</option>
+      </select>
+
+      <label for="day1Date">Date for Day 1:</label>
+      <input type="date" id="day1Date" required>
+
+      <label for="day2Date">Date for Day 2:</label>
+      <input type="date" id="day2Date" required>
+
+      <label for="day3Date">Date for Day 3:</label>
+      <input type="date" id="day3Date" required>
+
+      <label for="day4Date">Date for Day 4:</label>
+      <input type="date" id="day4Date" required>
+
+      <label for="day5Date">Date for Day 5:</label>
+      <input type="date" id="day5Date" required>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div class="section">
+      <h2>Change Day Order</h2>
+      <form id="changeDayOrderForm">
+        <label for="changeDate">Select Date:</label>
+        <input type="date" id="changeDate" required>
+
+        <label for="newDayOrder">New Day Order:</label>
+        <select id="newDayOrder" required>
+          <option value="">-- Select New Day Order --</option>
+          <option value="Day 1">Day 1</option>
+          <option value="Day 2">Day 2</option>
+          <option value="Day 3">Day 3</option>
+          <option value="Day 4">Day 4</option>
+          <option value="Day 5">Day 5</option>
+          <option value="Holiday">Holiday</option>
+        </select>
+
+        <button type="submit">Update Day Order</button>
+      </form>
+
+      <div class="info-box" id="mappingDisplay">
+        <strong>Current Day Order Mapping:</strong><br>
+        (Submit the form to view current mapping.)
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ Submit day orders
+    document.getElementById("dayOrderForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const entries = [
+        { date: document.getElementById("day1Date").value, order: "Day 1" },
+        { date: document.getElementById("day2Date").value, order: "Day 2" },
+        { date: document.getElementById("day3Date").value, order: "Day 3" },
+        { date: document.getElementById("day4Date").value, order: "Day 4" },
+        { date: document.getElementById("day5Date").value, order: "Day 5" }
+      ];
+
+      fetch("/set-day-orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orders: entries })
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          loadMapping();
+          fetchTodayOrder(); // Reload today's order
+        });
+    });
+
+    // ✅ Update specific date's order
+    document.getElementById("changeDayOrderForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const dateToChange = document.getElementById("changeDate").value;
+      const newOrder = document.getElementById("newDayOrder").value;
+
+      fetch("/update-day-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: dateToChange, newOrder })
+      })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message);
+          loadMapping();
+          fetchTodayOrder(); // Reload today's order
+        });
+    });
+
+    // ✅ Load mapping list
+    function loadMapping() {
+      fetch("/get-day-orders")
+        .then(res => res.json())
+        .then(data => {
+          const displayBox = document.getElementById("mappingDisplay");
+          let html = "<strong>Current Day Order Mapping:</strong><br>";
+          if (data.length === 0) {
+            html += "No mappings found.";
+          } else {
+            data.sort((a, b) => new Date(a.date) - new Date(b.date));
+            data.forEach(row => {
+              html += `${row.date} ➜ ${row.day_order}<br>`;
+            });
+          }
+          displayBox.innerHTML = html;
+        });
+    }
+
+    // ✅ Load today's day order
+    function fetchTodayOrder() {
+      fetch("/get-today-day-order")
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to load");
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById("dayOrderText").innerText = data.day_order;
+        })
+        .catch(err => {
+          console.error("❌ Error:", err);
+          document.getElementById("dayOrderText").innerText = "Error loading";
+        });
+    }
+
+    window.onload = () => {
+      loadMapping();
+      fetchTodayOrder();
+    };
+  </script>
+
+</body>
+
+</html>

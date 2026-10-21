@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= name %> | Attendance Analytics & Course Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #06090f;
+      --bg-surface: #0c121e;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(24, 36, 64, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(99, 102, 241, 0.4);
+      --indigo-500: #6366f1;
+      --indigo-600: #4f46e5;
+      --cyan-400: #38bdf8;
+      --cyan-500: #0ea5e9;
+      --violet-500: #8b5cf6;
+      --emerald-400: #34d399;
+      --amber-400: #fbbf24;
+      --rose-400: #fb7185;
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --shadow-card: 0 12px 36px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-subtle);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(ellipse 90% 60% at 50% -10%, rgba(99, 102, 241, 0.24) 0%, transparent 60%),
+        radial-gradient(circle at 10% 35%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 65%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.85) 0%, transparent 80%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 110px;
+    }
+
+    /* Top Ambient Navigation Header */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(6, 9, 15, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 32px;
+    }
+
+    .app-header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+
+    .brand-icon-box svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .brand-text-block h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-text-block p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .header-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 14px 5px 6px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--indigo-500) 0%, var(--cyan-400) 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+    }
+
+    .user-meta-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .user-name-text {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .user-id-text {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .menu-toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .menu-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-toggle-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Main Screen Wrapper */
+    .dashboard-wrapper {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 30px 32px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      flex: 1;
+    }
+
+    /* Expansive Hero Banner */
+    .attendance-hero {
+      background: linear-gradient(135deg, rgba(20, 29, 48, 0.85) 0%, rgba(12, 18, 30, 0.95) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .attendance-hero::after {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-title-group h1 {
+      font-size: clamp(1.4rem, 2.4vw, 1.95rem);
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.025em;
+    }
+
+    .hero-title-group h1 span.gradient-name {
+      background: linear-gradient(135deg, #a5b4fc 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title-group p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .hero-badges-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .stat-badge-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .stat-badge-chip svg {
+      width: 16px;
+      height: 16px;
+      color: var(--cyan-400);
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Overall Statistics Strip */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 980px) {
+      .stats-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .stats-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+      transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+    }
+
+    .stat-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .stat-icon-box.indigo { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); }
+    .stat-icon-box.emerald { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .stat-icon-box.rose { background: rgba(244, 63, 94, 0.2); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.35); }
+    .stat-icon-box.amber { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.35); }
+
+    .stat-icon-box svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .stat-text-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-number {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-desc {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Screen-Filling Multi-Column Course Attendance Grid */
+    .courses-grid-section {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--cyan-400);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-title-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .section-title-wrap h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .criteria-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--emerald-400);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+    }
+
+    /* Responsive Grid for Course Cards */
+    .courses-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .courses-card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Executive Course Card */
+    .course-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .course-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(99, 102, 241, 0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.6);
+    }
+
+    .course-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .course-title-group h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.015em;
+    }
+
+    .course-badge-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .code-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      font-family: monospace;
+    }
+
+    .type-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: var(--radius-sm);
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #c7d2fe;
+    }
+
+    /* Percentage Badge */
+    .percentage-badge-box {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .percent-number {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .percent-number.safe { color: var(--emerald-400); }
+    .percent-number.warning { color: var(--amber-400); }
+    .percent-number.danger { color: var(--rose-400); }
+
+    .percent-sub {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Modern Gradient Progress Track */
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-glow {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 0.6s ease;
+    }
+
+    .progress-bar-glow.safe {
+      background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+    }
+
+    .progress-bar-glow.warning {
+      background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%);
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+
+    .progress-bar-glow.danger {
+      background: linear-gradient(90deg, #ef4444 0%, #fb7185 100%);
+      box-shadow: 0 0 10px rgba(251, 113, 133, 0.5);
+    }
+
+    /* Detailed Breakdown Stats Bar */
+    .stats-breakdown-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .breakdown-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .breakdown-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .breakdown-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .breakdown-value.present-color { color: var(--emerald-400); }
+    .breakdown-value.absent-color { color: var(--rose-400); }
+
+    /* Empty state */
+    .empty-card-panel {
+      background: var(--bg-card);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-lg);
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    /* Floating Executive Capsule Dock */
+    .capsule-dock {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: rgba(12, 18, 30, 0.9);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius-pill);
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 16px 48px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      max-width: 92vw;
+    }
+
+    .capsule-dock form {
+      margin: 0;
+      padding: 0;
+    }
+
+    .dock-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 9px 18px;
+      border-radius: var(--radius-pill);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .dock-pill-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .dock-pill-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .dock-pill-btn.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--indigo-600) 0%, #3b82f6 100%);
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
+    }
+
+    /* Side-Over Navigation Drawer */
+    .drawer-scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .drawer-scrim.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-sheet {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 340px;
+      max-width: 85vw;
+      background: rgba(12, 18, 30, 0.98);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-left: 1px solid var(--border-subtle);
+      z-index: 1001;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .drawer-scrim.open .drawer-sheet {
+      transform: translateX(0);
+    }
+
+    .drawer-sheet-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+
+    .drawer-sheet-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .drawer-close-icon {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .drawer-nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-nav-item {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .drawer-nav-item:hover {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+    }
+
+    .drawer-nav-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--cyan-400);
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Ambient Header -->
+  <header class="app-header">
+    <div class="app-header-inner">
+      <a href="/student-profile" class="brand-link">
+        <div class="brand-icon-box">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14v7"/></svg>
+        </div>
+        <div class="brand-text-block">
+          <h1>
+            <span>SRM ACADEMIA</span>
+            <span class="brand-badge">Spring 2026</span>
+          </h1>
+          <p>Attendance Monitoring & Compliance Dashboard</p>
+        </div>
+      </a>
+
+      <div class="header-nav-right">
+        <!-- Student Pill -->
+        <div class="user-pill">
+          <div class="avatar-circle"><%= (name && name.length > 0) ? name.charAt(0).toUpperCase() : 'S' %></div>
+          <div class="user-meta-text">
+            <span class="user-name-text"><%= name %></span>
+            <span class="user-id-text">ID: <%= id %></span>
+          </div>
+        </div>
+
+        <!-- Menu Toggle Button -->
+        <button class="menu-toggle-btn" onclick="toggleDrawer()" title="Open Navigation Menu">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Screen-Filling Dashboard Container -->
+  <main class="dashboard-wrapper">
+
+    <!-- Hero Banner -->
+    <section class="attendance-hero">
+      <div class="hero-title-group">
+        <h1>Course Attendance & <span class="gradient-name">Lecture Tracker</span></h1>
+        <p>Real-time attendance tracking for verified student: <strong><%= name %></strong></p>
+      </div>
+
+      <div class="hero-badges-row">
+        <div class="stat-badge-chip">
+          <!-- Calendar Check Icon -->
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          <span><%= subjects ? subjects.length : 0 %> Enrolled Courses</span>
+        </div>
+        <div class="stat-badge-chip">
+          <!-- Shield Check Icon -->
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span>Council Standard: 75% Minimum</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Overall Statistics Strip Calculations -->
+    <% 
+      let totalLecturesAll = 0;
+      let totalPresentAll = 0;
+      let totalAbsentAll = 0;
+      if (subjects && subjects.length > 0) {
+        subjects.forEach(sub => {
+          totalLecturesAll += (sub.total || 0);
+          totalPresentAll += (sub.present || 0);
+          totalAbsentAll += (sub.absent || 0);
+        });
+      }
+      const overallPercent = totalLecturesAll === 0 ? 0 : Math.round((totalPresentAll / totalLecturesAll) * 100);
+    %>
+
+    <!-- 4-Card Overview Stats Strip -->
+    <section class="stats-strip">
+      <div class="stat-card">
+        <div class="stat-icon-box indigo">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="stat-text-box">
+          <span class="stat-number <%= overallPercent >= 75 ? 'present-color' : (overallPercent === 0 ? '' : 'absent-color') %>">
+            <%= overallPercent %>%
+          </span>
+          <span class="stat-desc">Aggregate Attendance</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-box emerald">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="stat-text-box">
+          <span class="stat-number" style="color: var(--emerald-400);"><%= totalPresentAll %></span>
+          <span class="stat-desc">Attended Lectures</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-box rose">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="stat-text-box">
+          <span class="stat-number" style="color: var(--rose-400);"><%= totalAbsentAll %></span>
+          <span class="stat-desc">Recorded Absences</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-box amber">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        </div>
+        <div class="stat-text-box">
+          <span class="stat-number"><%= totalLecturesAll %></span>
+          <span class="stat-desc">Total Classes Held</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Courses Attendance Grid -->
+    <section class="courses-grid-section">
+      <div class="section-header-row">
+        <div class="section-title-wrap">
+          <div class="section-title-icon">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </div>
+          <h2>Subject-Wise Attendance Breakdown</h2>
+        </div>
+
+        <div class="criteria-badge">
+          <span>Target: 75% Criteria</span>
+        </div>
+      </div>
+
+      <% if (!subjects || subjects.length === 0) { %>
+        <div class="empty-card-panel">
+          <svg style="width:44px;height:44px;margin-bottom:12px;opacity:0.4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <h3>No Attendance Records Found</h3>
+          <p>No subjects have been assigned to your student profile yet.</p>
+        </div>
+      <% } else { %>
+        <div class="courses-card-grid">
+          <% subjects.forEach(subject => {
+            const total = subject.total || 0;
+            const present = subject.present || 0;
+            const absent = subject.absent || 0;
+            const percent = total === 0 ? 0 : Math.round((present / total) * 100);
+            const statusClass = (total === 0 || percent >= 75) ? 'safe' : (percent >= 65 ? 'warning' : 'danger');
+          %>
+            <div class="course-card">
+              <div class="course-top-row">
+                <div class="course-title-group">
+                  <h3><%= subject.name %></h3>
+                  <div class="course-badge-row">
+                    <span class="code-pill">Code: <%= subject.code %></span>
+                    <span class="type-pill"><%= subject.type %></span>
+                  </div>
+                </div>
+
+                <div class="percentage-badge-box">
+                  <span class="percent-number <%= statusClass %>"><%= percent %>%</span>
+                  <span class="percent-sub">Attendance</span>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="progress-track">
+                <div class="progress-bar-glow <%= statusClass %>" data-fill="<%= total === 0 ? 10 : percent %>"></div>
+              </div>
+
+              <!-- Stats Breakdown Bar -->
+              <div class="stats-breakdown-row">
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Total Held</span>
+                  <span class="breakdown-value"><%= total %></span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Present</span>
+                  <span class="breakdown-value present-color"><%= present %></span>
+                </div>
+                <div class="breakdown-item">
+                  <span class="breakdown-label">Absent</span>
+                  <span class="breakdown-value absent-color"><%= absent %></span>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+  </main>
+
+  <!-- Modern Floating Executive Capsule Dock -->
+  <nav class="capsule-dock">
+    <form action="/student-profile" method="GET">
+      <input type="hidden" name="name" value="<%= name %>">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Home</span>
+      </button>
+    </form>
+
+    <form action="/student-dashboard" method="POST">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn active">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        <span>Attendance</span>
+      </button>
+    </form>
+
+    <form action="/student-marks" method="POST">
+      <input type="hidden" name="studentId" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span>Marks</span>
+      </button>
+    </form>
+
+    <form action="/view-timetable" method="POST">
+      <input type="hidden" name="studentName" value="<%= name %>">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>Timetable</span>
+      </button>
+    </form>
+  </nav>
+
+  <!-- Slide-Over Navigation Drawer -->
+  <div class="drawer-scrim" id="drawerScrim" onclick="toggleDrawer()">
+    <div class="drawer-sheet" onclick="event.stopPropagation()">
+      <div class="drawer-sheet-top">
+        <span class="drawer-sheet-title">SRM Academia Navigation</span>
+        <button class="drawer-close-icon" onclick="toggleDrawer()">✕</button>
+      </div>
+
+      <div class="drawer-nav-list">
+        <form action="/student-info" method="POST">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="name" value="<%= name %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>My Student Profile</span>
+          </button>
+        </form>
+
+        <form action="/student-dashboard" method="POST">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            <span>Attendance Status</span>
+          </button>
+        </form>
+
+        <form action="/student-marks" method="POST">
+          <input type="hidden" name="studentId" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span>Marks & Evaluation</span>
+          </button>
+        </form>
+
+        <form action="/view-timetable" method="POST">
+          <input type="hidden" name="studentName" value="<%= name %>">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span>Timetable Schedule</span>
+          </button>
+        </form>
+
+        <form action="/view-internships" method="GET">
+          <input type="hidden" name="name" value="<%= name %>">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>Internship Board</span>
+          </button>
+        </form>
+
+        <form action="/view-hackathons" method="GET">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <input type="hidden" name="name" value="<%= name %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span>Hackathons</span>
+          </button>
+        </form>
+
+        <a href="chat.html" class="drawer-nav-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>SRM GPT AI</span>
+        </a>
+
+        <a href="/login-page" class="drawer-nav-item" style="color: #fda4af; margin-top: 14px; border-color: rgba(244, 63, 94, 0.2);">
+          <svg style="color: #fda4af;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span>Log Out</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Animate and set progress bars
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('[data-fill]').forEach(bar => {
+        bar.style.width = bar.getAttribute('data-fill') + '%';
+      });
+    });
+
+    // Drawer toggle
+    function toggleDrawer() {
+      const scrim = document.getElementById("drawerScrim");
+      scrim.classList.toggle("open");
+    }
+  </script>
+</body>
+</html>

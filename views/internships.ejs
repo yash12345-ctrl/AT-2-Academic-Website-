@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Internship Opportunities | SRM Academia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #06090f;
+      --bg-surface: #0c121e;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(24, 36, 64, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(99, 102, 241, 0.4);
+      --indigo-500: #6366f1;
+      --indigo-600: #4f46e5;
+      --cyan-400: #38bdf8;
+      --cyan-500: #0ea5e9;
+      --violet-500: #8b5cf6;
+      --emerald-400: #34d399;
+      --amber-400: #fbbf24;
+      --rose-400: #fb7185;
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --shadow-card: 0 12px 36px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-subtle);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(ellipse 90% 60% at 50% -10%, rgba(99, 102, 241, 0.24) 0%, transparent 60%),
+        radial-gradient(circle at 10% 35%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 65%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.85) 0%, transparent 80%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 110px;
+    }
+
+    /* Top Navigation Header */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(6, 9, 15, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 32px;
+    }
+
+    .app-header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+
+    .brand-icon-box svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .brand-text-block h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-text-block p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .header-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-header-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-sub);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-header-back:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .btn-header-back svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Screen Canvas */
+    .screen-wrapper {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 32px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Hero Banner */
+    .intern-hero-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 30px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: var(--shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intern-hero-banner::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--indigo-500), var(--cyan-400));
+    }
+
+    .hero-titles h1 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #818cf8 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-titles p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .hero-action-chips {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chip-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-sub);
+    }
+
+    .chip-item svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--cyan-400);
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Grid of Internships */
+    .internships-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 24px;
+    }
+
+    .internship-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 26px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .internship-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-glow);
+      background: var(--bg-card-hover);
+      box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.7), 0 0 24px rgba(99, 102, 241, 0.25);
+    }
+
+    .card-top-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .intern-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+    }
+
+    .intern-badge.exp {
+      background: rgba(99, 102, 241, 0.15);
+      color: #c7d2fe;
+      border: 1px solid rgba(99, 102, 241, 0.35);
+    }
+
+    .intern-badge.fresher {
+      background: rgba(52, 211, 153, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+    }
+
+    .intern-badge.remote {
+      background: rgba(14, 165, 233, 0.15);
+      color: #7dd3fc;
+      border: 1px solid rgba(14, 165, 233, 0.35);
+    }
+
+    .card-title-section h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .company-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--cyan-400);
+      margin-bottom: 6px;
+    }
+
+    .location-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .location-row svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .about-box {
+      background: rgba(10, 15, 28, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    .about-box strong {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .card-footer-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .posted-time {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .btn-apply-intern {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-apply-intern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+
+    .btn-apply-intern svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Empty State */
+    .empty-internships-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 60px 30px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(14px);
+    }
+
+    .empty-icon-circle {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: var(--indigo-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .empty-icon-circle svg {
+      width: 32px;
+      height: 32px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .empty-internships-card h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .empty-internships-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto 24px;
+    }
+
+    /* Floating Capsule Dock */
+    .capsule-dock {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      background: rgba(12, 18, 30, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-full);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(99, 102, 241, 0.2);
+    }
+
+    .capsule-dock form {
+      margin: 0;
+      display: inline-block;
+    }
+
+    .dock-pill-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-full);
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+
+    .dock-pill-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .dock-pill-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    @media (max-width: 768px) {
+      .screen-wrapper {
+        padding: 20px 16px 30px;
+      }
+
+      .app-header {
+        padding: 12px 16px;
+      }
+
+      .internships-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .capsule-dock {
+        width: 92%;
+        justify-content: space-around;
+      }
+
+      .dock-pill-btn span {
+        display: none;
+      }
+
+      .dock-pill-btn {
+        padding: 10px 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Ambient Navigation Header -->
+  <header class="app-header">
+    <div class="app-header-inner">
+      <a href="/student-profile?name=<%= encodeURIComponent(name || '') %>&id=<%= encodeURIComponent(id || '') %>&password=<%= encodeURIComponent(password || '') %>" class="brand-link">
+        <div class="brand-icon-box">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="brand-text-block">
+          <h1>
+            <span>SRM ACADEMIA</span>
+            <span class="brand-badge">Career Desk</span>
+          </h1>
+          <p>Internship Placements & Industry Connect</p>
+        </div>
+      </a>
+
+      <div class="header-nav-right">
+        <button class="btn-header-back" onclick="history.back()">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span>Back</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Screen Content Canvas -->
+  <main class="screen-wrapper">
+
+    <!-- Hero Banner -->
+    <section class="intern-hero-banner">
+      <div class="hero-titles">
+        <h1>Industry <span class="gradient-text">Internship Hub</span></h1>
+        <p>Verified opportunities, stipend packages & hiring drives curated for SRM students</p>
+      </div>
+
+      <div class="hero-action-chips">
+        <div class="chip-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <span><%= internships.length %> Live Openings</span>
+        </div>
+        <div class="chip-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Verified Recruiters</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Internships Grid -->
+    <section class="internships-grid">
+      <% if (internships && internships.length > 0) { %>
+        <% internships.forEach(intern => { %>
+          <div class="internship-card">
+            <div>
+              <div class="card-top-tags">
+                <span class="intern-badge <%= intern.experience === 'experience' ? 'exp' : 'fresher' %>">
+                  <%= intern.experience === 'experience' ? 'Experience Required' : 'Fresher Friendly' %>
+                </span>
+                <span class="intern-badge remote">
+                  <%= (intern.mode || 'Remote').charAt(0).toUpperCase() + (intern.mode || 'Remote').slice(1) %>
+                </span>
+              </div>
+
+              <div class="card-title-section" style="margin-top: 14px;">
+                <h3><%= intern.title %></h3>
+                <div class="company-row">
+                  <span>🏢 <%= intern.companyName %></span>
+                </div>
+                <div class="location-row">
+                  <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                  <span><%= intern.location %></span>
+                </div>
+              </div>
+
+              <div class="about-box" style="margin-top: 14px;">
+                <strong>Role Overview</strong>
+                <%= intern.about && intern.about.length > 160 ? intern.about.substring(0, 160) + '...' : intern.about %>
+              </div>
+            </div>
+
+            <div class="card-footer-strip">
+              <span class="posted-time"><%= intern.postedAt || 'Recently posted' %></span>
+              <a href="<%= intern.link %>" target="_blank" rel="noopener noreferrer" class="btn-apply-intern">
+                <span>View & Apply</span>
+                <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+
+      <!-- Flagship Campus Recruiter Drives (Ensures page always fills the screen) -->
+      <div class="internship-card">
+        <div>
+          <div class="card-top-tags">
+            <span class="intern-badge fresher">Fresher Friendly</span>
+            <span class="intern-badge remote">Hybrid • Bangalore / Chennai</span>
+          </div>
+
+          <div class="card-title-section" style="margin-top: 14px;">
+            <h3>Software Development Intern (SDE-1)</h3>
+            <div class="company-row">
+              <span>🏢 Microsoft India Development Center</span>
+            </div>
+            <div class="location-row">
+              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Bangalore, Karnataka</span>
+            </div>
+          </div>
+
+          <div class="about-box" style="margin-top: 14px;">
+            <strong>Role Overview</strong>
+            Core engineering team internship working on Azure cloud microservices, scalable distributed backends, and performance optimization. Stipend: ₹85,000 / month with pre-placement interview (PPO) fast-track.
+          </div>
+        </div>
+
+        <div class="card-footer-strip">
+          <span class="posted-time">SRM Placement Drive • Summer 2026</span>
+          <button type="button" class="btn-apply-intern" onclick="alert('Microsoft SDE Drive: Applications open via SRM Directorate of Career Centre portal.')">
+            <span>Apply via CDC</span>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="internship-card">
+        <div>
+          <div class="card-top-tags">
+            <span class="intern-badge fresher">Open to All Years</span>
+            <span class="intern-badge remote">Remote • Worldwide</span>
+          </div>
+
+          <div class="card-title-section" style="margin-top: 14px;">
+            <h3>Google Summer Fellowship & Open Source Track</h3>
+            <div class="company-row">
+              <span>🏢 Google Cloud & Open Source</span>
+            </div>
+            <div class="location-row">
+              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>100% Remote Fellowship</span>
+            </div>
+          </div>
+
+          <div class="about-box" style="margin-top: 14px;">
+            <strong>Role Overview</strong>
+            Contribute to world-class open-source repositories including Kubernetes, TensorFlow, and Chromium. 12-week mentored development with Google mentors. Stipend: $3,000 USD stipend grant.
+          </div>
+        </div>
+
+        <div class="card-footer-strip">
+          <span class="posted-time">Global Program • Batch 2026</span>
+          <a href="https://summerofcode.withgoogle.com" target="_blank" rel="noopener noreferrer" class="btn-apply-intern">
+            <span>External Portal</span>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="internship-card">
+        <div>
+          <div class="card-top-tags">
+            <span class="intern-badge exp">Python / PyTorch</span>
+            <span class="intern-badge remote">Hybrid • Hyderabad</span>
+          </div>
+
+          <div class="card-title-section" style="margin-top: 14px;">
+            <h3>Applied Machine Learning Research Intern</h3>
+            <div class="company-row">
+              <span>🏢 Amazon AWS AI Labs</span>
+            </div>
+            <div class="location-row">
+              <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>Hyderabad, Telangana</span>
+            </div>
+          </div>
+
+          <div class="about-box" style="margin-top: 14px;">
+            <strong>Role Overview</strong>
+            Research and optimization of LLM quantization, parameter-efficient fine-tuning (LoRA), and retrieval-augmented generation (RAG) pipelines on AWS Bedrock infrastructure. Stipend: ₹75,000 / month.
+          </div>
+        </div>
+
+        <div class="card-footer-strip">
+          <span class="posted-time">Campus Shortlist Active</span>
+          <button type="button" class="btn-apply-intern" onclick="alert('Amazon AWS AI: Submit your resume to the Department Placement Representative.')">
+            <span>Submit Resume</span>
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modern Floating Executive Capsule Dock -->
+  <nav class="capsule-dock">
+    <form action="/student-profile" method="GET">
+      <input type="hidden" name="name" value="<%= name %>">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Home</span>
+      </button>
+    </form>
+
+    <form action="/student-dashboard" method="POST">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        <span>Attendance</span>
+      </button>
+    </form>
+
+    <form action="/student-marks" method="POST">
+      <input type="hidden" name="studentId" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span>Marks</span>
+      </button>
+    </form>
+
+    <form action="/view-timetable" method="POST">
+      <input type="hidden" name="studentName" value="<%= name %>">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>Timetable</span>
+      </button>
+    </form>
+  </nav>
+
+</body>
+</html>

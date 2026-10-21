@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>
+    <%= name %>'s Profile
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #ff5ec4, #a362f9, #7f9df5, #70e7f2);
+      background-size: cover;
+      background-attachment: fixed;
+      color: white;
+    }
+
+    .welcome-banner {
+      text-align: center;
+      padding: 30px 0;
+      background: linear-gradient(to right, #d946ef, #8b5cf6, #60a5fa);
+      font-size: clamp(24px, 5vw, 40px);
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .main-content {
+      text-align: center;
+      padding: 40px 20px 100px;
+    }
+
+    .gallery-container,
+    .menu-container,
+    .schedule-container,
+    .outer-internship-container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      padding: 25px 20px;
+      max-width: 95%;
+      margin: 0 auto 40px auto;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .gallery-container h2,
+    .menu-heading {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-height: 250px;
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    .active {
+      display: block;
+    }
+
+    .button-pair {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .button-pair button,
+    .full-button button {
+      flex: 1 1 45%;
+      min-width: 140px;
+      height: 50px;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: white;
+      color: #333;
+      transition: background 0.3s;
+    }
+
+    .button-pair button:hover,
+    .full-button button:hover {
+      background-color: #dddddd;
+    }
+
+    .schedule-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 12px 18px;
+      margin-bottom: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      color: #4b0082;
+    }
+
+    .schedule-subject.no-class {
+      color: #e63946;
+      font-style: italic;
+    }
+
+    .tag {
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 20px;
+      padding: 5px 10px;
+      margin-right: 6px;
+      color: white;
+      display: inline-block;
+    }
+
+    .tag.remote {
+      background-color: #4361ee;
+    }
+
+    .tag.experience {
+      background-color: #f72585;
+    }
+
+    .internship-card {
+      background: #f7f8fc;
+      color: #333;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .internship-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #7209b7;
+      text-decoration: underline;
+      margin: 12px 0;
+    }
+
+    .internship-card p {
+      margin: 6px 0;
+      font-size: 13px;
+    }
+
+    .view-button {
+      background-color: #8e24aa;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-top: 14px;
+      cursor: pointer;
+    }
+
+    .view-button:hover {
+      background-color: #6a1b9a;
+    }
+
+    .containeryash {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 8px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 999;
+    }
+
+    .containeryash form {
+      flex: 1 1 45%;
+      max-width: 160px;
+    }
+
+    .containeryash button {
+      width: 100%;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border: 2px solid black;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .containeryash button:hover {
+      background-color: #e0e0e0;
+    }
+
+    @media (max-width: 400px) {
+      .containeryash form {
+        flex: 1 1 100%;
+        max-width: none;
+      }
+    }
+
+    .hamburger {
+      font-size: 24px;
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      z-index: 1000;
+      cursor: pointer;
+      color: white;
+      background: rgba(0, 0, 0, 0.1);
+      padding: 8px 14px;
+      border-radius: 8px;
+    }
+
+    #overlayMenu {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 999;
+      top: 0;
+      right: 0;
+      background-color: white;
+      overflow-x: hidden;
+      transition: 0.5s;
+      color: black;
+    }
+
+    .overlay-content {
+      padding: 60px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      text-align: center;
+    }
+
+    .overlay-content a {
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+      color: #111;
+      transition: 0.3s;
+    }
+
+    .overlay-content a:hover {
+      color: #5e35b1;
+    }
+
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 22px;
+      margin-bottom: 40px;
+    }
+
+    .close-btn {
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+      .main-content {
+        padding: 60px 40px 120px;
+      }
+
+      .gallery-container,
+      .menu-container,
+      .schedule-container,
+      .outer-internship-container {
+        max-width: 900px;
+      }
+
+      .schedule-item {
+        font-size: 16px;
+        padding: 14px 20px;
+      }
+
+      .button-pair button,
+      .full-button button {
+        font-size: 18px;
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="welcome-banner">Welcome, <%= name %>!</div>
+
+  <div class="main-content">
+    <!-- GALLERY -->
+    <div class="gallery-container">
+      <h2>SRM TECH GALLERY</h2>
+      <div class="slideshow-container">
+        <% if (images && images.length> 0) { %>
+          <% images.forEach((img, index)=> { %>
+            <img src="<%= img %>" class="slide <%= index === 0 ? 'active' : '' %>" alt="Image <%= index + 1 %>">
+            <% }) %>
+              <% } else { %>
+                <p>No images uploaded yet.</p>
+                <% } %>
+      </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="menu-container">
+      <div class="menu-heading">MENU</div>
+      <div id="button-row-1">
+        <div class="button-pair">
+          <button>PROFILE</button>
+          <button>MARKS</button>
+        </div>
+        <div class="button-pair">
+          <button>TIME TABLE</button>
+          <button>ATTENDANCE</button>
+        </div>
+        <div class="button-pair">
+          <button onclick="toggleMoreButtons()">More</button>
+        </div>
+      </div>
+
+      <div id="button-row-2" style="display: none;">
+        <div class="button-pair">
+          <form action="/view-internships" method="GET" class="full-button">
+            <input type="hidden" name="name" value="<%= name %>">
+            <input type="hidden" name="id" value="<%= id %>">
+            <input type="hidden" name="password" value="<%= password %>">
+            <button type="submit">INTERNSHIPS</button>
+          </form>
+          <button>DEVELOPER</button>
+        </div>
+        <div class="button-pair">
+          <button onclick="window.location.href='chat.html'">SRM GPT</button>
+          <form action="/view-hackathons" method="GET" class="full-button">
+            <input type="hidden" name="id" value="<%= id %>">
+            <input type="hidden" name="password" value="<%= password %>">
+            <input type="hidden" name="name" value="<%= name %>">
+            <button type="submit">HACKATHONS</button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DAY ORDER + SCHEDULE -->
+    <div class="schedule-container">
+      <div class="menu-heading">Today's Schedule</div>
+      <p style="font-size: 18px; margin-bottom: 25px;">
+        <strong>Day Order:</strong>
+        <%= dayOrder %>
+      </p>
+      <% const fixedSlots=[ "8:00 - 8:50" , "8:50 - 9:40" , "9:45 - 10:35" , "10:40 - 11:30" , "11:35 - 12:25"
+        , "12:30 - 1:20" , "1:25 - 2:15" , "2:20 - 3:10" , "3:10 - 4:00" , "4:00 - 4:50" ]; fixedSlots.forEach(slot=> {
+        const subjectEntry = todaySubjects.find(item => item.time_slot === slot);
+        %>
+        <div class="schedule-item">
+          <div class="schedule-time">
+            <%= slot %>
+          </div>
+          <div class="schedule-subject">
+            <%= subjectEntry ? subjectEntry.subject : "No Class" %>
+          </div>
+        </div>
+        <% }) %>
+    </div>
+
+    <!-- INTERNSHIP CARD -->
+    <!-- OUTER WRAPPER CONTAINER -->
+    <div class="outer-internship-container">
+      <div class="menu-heading">INTERNSHIPS</div>
+
+      <!-- INNER INTERNSHIP CARD (REDUCED SIZE) -->
+      <div class="internship-card inner-internship-card">
+        <% if (internships && internships.length> 0) {
+          const intern = internships[0]; %>
+
+          <div>
+            <span class="tag experience">
+              <%= intern.experience==='experience' ? 'Experience' : 'No Experience' %>
+            </span>
+            <span class="tag remote">
+              <%= intern.mode.charAt(0).toUpperCase() + intern.mode.slice(1) %>
+            </span>
+          </div>
+          <div class="internship-title">
+            <%= intern.title %>
+          </div>
+          <p>🏢 <%= intern.companyName %>
+          </p>
+          <p>📍 <%= intern.location %>
+          </p>
+          <p><strong>Company Description</strong>
+            <%= intern.about.length> 150 ? intern.about.substring(0, 150) + '...' : intern.about %>
+          </p>
+          <a href="<%= intern.link %>" target="_blank" rel="noopener noreferrer">
+            <button class="view-button">View salary & More Info</button>
+          </a>
+
+
+
+          <!-- MORE Button -->
+          <form action="/internship-details" method="POST" style="margin-top: 6px;">
+            <input type="hidden" name="id" value="<%= id %>">
+            <input type="hidden" name="password" value="<%= password %>">
+            <input type="hidden" name="name" value="<%= name %>">
+            <button type="submit" class="view-button" style="background-color: #5e35b1;">View-More</button>
+          </form>
+
+
+
+
+          <% } else { %>
+            <div class="internship-title">No Internship Available</div>
+            <p>Please check back later. New internships will be displayed here when available.</p>
+            <% } %>
+      </div>
+    </div>
+
+    <!-- HACKATHONS SECTION -->
+    <div class="outer-internship-container">
+      <div class="menu-heading">HACKATHONS</div>
+      <div class="internship-card inner-internship-card">
+        <% if (hackathons && hackathons.length> 0) {
+          const hack = hackathons[0]; %>
+
+          <div>
+            <span class="tag experience">
+              <%= hack.mode==='Offline' ? 'Offline' : 'Online' %>
+            </span>
+            <span class="tag remote">
+              <%= hack.fees==='0' ? 'Free' : '₹' + hack.fees %>
+            </span>
+          </div>
+
+          <div class="internship-title">
+            <%= hack.hackathonName %>
+          </div>
+          <p>🏫 <%= hack.collegeName %>
+          </p>
+          <p>📅 Deadline: <%= hack.deadline %>
+          </p>
+          <% let hackDescription='No additional info available.' ; if (hack.details) {
+            hackDescription=hack.details.length> 200
+            ? hack.details.substring(0, 200) + '...'
+            : hack.details;
+            }
+            %>
+            <p><strong>More Info:</strong><br />
+              <%= hackDescription %>
+            </p>
+
+
+
+            <a href="<%= hack.link %>" target="_blank">
+              <button class="view-button">Register Now</button>
+            </a>
+
+            <form action="/hackathon-details" method="POST" style="margin-top: 6px;">
+              <input type="hidden" name="id" value="<%= id %>">
+              <input type="hidden" name="password" value="<%= password %>">
+              <input type="hidden" name="name" value="<%= name %>">
+              <button type="submit" class="view-button" style="background-color: #5e35b1;">More</button>
+            </form>
+
+
+            <% } else { %>
+              <div class="internship-title">No Hackathon Available</div>
+              <p>New hackathons will be shown here once available.</p>
+              <% } %>
+      </div>
+    </div>
+
+    <!-- Hamburger Menu -->
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+
+    <!-- Fullscreen Menu Overlay -->
+    <div id="overlayMenu">
+      <div class="overlay-content">
+        <div class="menu-header">
+
+          <span class="close-btn" onclick="toggleMenu()">×</span>
+        </div>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Blogs</a>
+
+      </div>
+    </div>
+
+
+
+
+    <!-- SLIDESHOW SCRIPT -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const slides = document.querySelectorAll('.slide');
+        let currentIndex = 0;
+        function showSlide(index) {
+          slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+          });
+        }
+        setInterval(() => {
+          currentIndex = (currentIndex + 1) % slides.length;
+          showSlide(currentIndex);
+        }, 3000);
+
+        window.toggleMoreButtons = function () {
+          const row = document.getElementById('button-row-2');
+          row.style.display = row.style.display === 'none' ? 'block' : 'none';
+        };
+      });
+
+
+      function toggleMenu() {
+        const overlay = document.getElementById("overlayMenu");
+        overlay.style.width = overlay.style.width === "100%" ? "0" : "100%";
+      }
+
+
+    </script>
+
+    <!-- NAV BAR -->
+    <div class="containeryash">
+      <form action="/student-profile" method="GET">
+        <input type="hidden" name="name" value="<%= name %>">
+        <input type="hidden" name="id" value="<%= id %>">
+        <input type="hidden" name="password" value="<%= password %>">
+        <button type="submit">HOME</button>
+      </form>
+      <form action="/student-dashboard" method="POST">
+        <input type="hidden" name="id" value="<%= id %>">
+        <input type="hidden" name="password" value="<%= password %>">
+        <button type="submit">ATTENDANCE</button>
+      </form>
+      <form action="/student-marks" method="POST">
+        <input type="hidden" name="studentId" value="<%= id %>">
+        <input type="hidden" name="password" value="<%= password %>">
+        <button>MARKS</button>
+      </form>
+      <form action="/view-timetable" method="POST">
+        <input type="hidden" name="studentName" value="<%= name %>">
+        <input type="hidden" name="id" value="<%= id %>">
+        <input type="hidden" name="password" value="<%= password %>">
+        <button type="submit">TIME TABLE</button>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

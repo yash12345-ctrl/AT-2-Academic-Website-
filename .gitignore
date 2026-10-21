@@ -1,0 +1,34 @@
+# Environment Variables & Secrets (Keep your Neon credentials safe!)
+.env
+.env.local
+.env.*.local
+
+# Dependency directories
+node_modules/
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+student.db
+
+# User uploaded media / images
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

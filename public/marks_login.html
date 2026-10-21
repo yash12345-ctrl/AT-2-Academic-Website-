@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Marks System Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: linear-gradient(135deg, #43cea2, #185a9d);
+      color: #fff;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    form {
+      max-width: 400px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #fff;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Marks System Login</h2>
+
+  <form action="/marks-login" method="POST">
+    <input type="text" name="marksLoginId" placeholder="Enter Marks ID" required>
+    <input type="password" name="marksLoginPassword" placeholder="Enter Marks Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+</body>
+</html>

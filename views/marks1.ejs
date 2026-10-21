@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= name %> | Academic Marks & Grade Evaluation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-base: #06090f;
+      --bg-surface: #0c121e;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(24, 36, 64, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(99, 102, 241, 0.4);
+      --indigo-500: #6366f1;
+      --indigo-600: #4f46e5;
+      --cyan-400: #38bdf8;
+      --cyan-500: #0ea5e9;
+      --violet-500: #8b5cf6;
+      --emerald-400: #34d399;
+      --amber-400: #fbbf24;
+      --rose-400: #fb7185;
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --shadow-card: 0 12px 36px -4px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border-subtle);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(ellipse 90% 60% at 50% -10%, rgba(99, 102, 241, 0.24) 0%, transparent 60%),
+        radial-gradient(circle at 10% 35%, rgba(56, 189, 248, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 65%, rgba(139, 92, 246, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(15, 23, 42, 0.85) 0%, transparent 80%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 110px;
+    }
+
+    /* Top Ambient Navigation Header */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(6, 9, 15, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 32px;
+    }
+
+    .app-header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon-box {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    }
+
+    .brand-icon-box svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .brand-text-block h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-text-block p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .header-nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 14px 5px 6px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--indigo-500) 0%, var(--cyan-400) 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
+    }
+
+    .user-meta-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .user-name-text {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .user-id-text {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .menu-toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .menu-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-toggle-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Screen Container */
+    .screen-wrapper {
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 30px 32px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      flex: 1;
+    }
+
+    /* Expansive Hero Banner */
+    .marks-hero-banner {
+      background: linear-gradient(135deg, rgba(20, 29, 48, 0.85) 0%, rgba(12, 18, 30, 0.95) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .marks-hero-banner::after {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -40px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-titles h1 {
+      font-size: clamp(1.4rem, 2.4vw, 1.95rem);
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.025em;
+    }
+
+    .hero-titles h1 span.gradient-text {
+      background: linear-gradient(135deg, #c084fc 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-titles p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .hero-action-chips {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .chip-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .chip-item svg {
+      width: 16px;
+      height: 16px;
+      color: var(--cyan-400);
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .btn-print {
+      background: linear-gradient(135deg, var(--indigo-600) 0%, #3b82f6 100%);
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-print:hover {
+      background: linear-gradient(135deg, #4338ca 0%, #2563eb 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-print svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* 4-Card Performance Stats Strip */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 980px) {
+      .metrics-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .metrics-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-card);
+      transition: all 0.2s ease;
+    }
+
+    .metric-panel:hover {
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+    }
+
+    .metric-icon-bubble {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .metric-icon-bubble.purple { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.35); }
+    .metric-icon-bubble.emerald { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .metric-icon-bubble.cyan { background: rgba(14, 165, 233, 0.2); color: #7dd3fc; border: 1px solid rgba(14, 165, 233, 0.35); }
+    .metric-icon-bubble.amber { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.35); }
+
+    .metric-icon-bubble svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .metric-content-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-main-val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-sub-title {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Screen-Filling Subject Evaluation Cards Grid */
+    .scorecard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .scorecard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .subject-scorecard {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: all 0.25s ease;
+    }
+
+    .subject-scorecard:hover {
+      border-color: rgba(168, 85, 247, 0.45);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px -6px rgba(0, 0, 0, 0.6);
+    }
+
+    .scorecard-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .scorecard-header h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.015em;
+    }
+
+    .subject-badge-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #d8b4fe;
+      white-space: nowrap;
+    }
+
+    /* Assessment Rows */
+    .assessments-table {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .assessment-entry-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.15s ease;
+    }
+
+    .assessment-entry-row:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .test-name-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .test-bullet-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan-400);
+      box-shadow: 0 0 6px var(--cyan-400);
+    }
+
+    .test-name-text {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-sub);
+    }
+
+    .test-score-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-chip-scored {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #ffffff;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      padding: 3px 10px;
+      border-radius: var(--radius-sm);
+    }
+
+    .score-chip-max {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .scorecard-total-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+      margin-top: 4px;
+    }
+
+    .total-footer-label {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .total-footer-score {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .total-footer-scored {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--emerald-400);
+    }
+
+    .total-footer-max {
+      font-size: 0.86rem;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    /* Screen-Filling Empty State: Evaluation Roadmap Hub */
+    .evaluation-roadmap-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .roadmap-hero-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(56, 189, 248, 0.05) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius-md);
+      padding: 24px;
+    }
+
+    .notice-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: var(--cyan-400);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .notice-icon-box svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .notice-text h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.015em;
+    }
+
+    .notice-text p {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      margin-top: 6px;
+      line-height: 1.6;
+    }
+
+    /* 3-Milestone Timeline */
+    .milestones-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .milestones-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .milestone-tile {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .milestone-tile:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .milestone-tile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .milestone-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .milestone-badge.completed { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .milestone-badge.evaluating { background: rgba(245, 158, 11, 0.15); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .milestone-badge.upcoming { background: rgba(99, 102, 241, 0.15); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+    .milestone-step-num {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--text-dim);
+    }
+
+    .milestone-tile h4 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .milestone-tile p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* GPA Reference Scale */
+    .gpa-scale-strip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .gpa-scale-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--cyan-400);
+    }
+
+    .gpa-ranks-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 640px) {
+      .gpa-ranks-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .gpa-rank-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .gpa-letter {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .gpa-range {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Floating Executive Capsule Dock */
+    .capsule-dock {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      background: rgba(12, 18, 30, 0.9);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius-pill);
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 16px 48px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      max-width: 92vw;
+    }
+
+    .capsule-dock form {
+      margin: 0;
+      padding: 0;
+    }
+
+    .dock-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 9px 18px;
+      border-radius: var(--radius-pill);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+
+    .dock-pill-btn svg {
+      width: 17px;
+      height: 17px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .dock-pill-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .dock-pill-btn.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--indigo-600) 0%, #3b82f6 100%);
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
+    }
+
+    /* Side-Over Navigation Drawer */
+    .drawer-scrim {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .drawer-scrim.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-sheet {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 340px;
+      max-width: 85vw;
+      background: rgba(12, 18, 30, 0.98);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-left: 1px solid var(--border-subtle);
+      z-index: 1001;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .drawer-scrim.open .drawer-sheet {
+      transform: translateX(0);
+    }
+
+    .drawer-sheet-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+    }
+
+    .drawer-sheet-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .drawer-close-icon {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .drawer-nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .drawer-nav-item {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .drawer-nav-item:hover {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.35);
+      color: #c7d2fe;
+    }
+
+    .drawer-nav-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--cyan-400);
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .app-header, .capsule-dock, .btn-print {
+        display: none !important;
+      }
+      .metric-panel, .subject-scorecard, .evaluation-roadmap-card {
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+      }
+      .metric-main-val, .total-footer-scored, .score-chip-scored {
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Ambient Header -->
+  <header class="app-header">
+    <div class="app-header-inner">
+      <a href="/student-profile" class="brand-link">
+        <div class="brand-icon-box">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14v7"/></svg>
+        </div>
+        <div class="brand-text-block">
+          <h1>
+            <span>SRM ACADEMIA</span>
+            <span class="brand-badge">Spring 2026</span>
+          </h1>
+          <p>Marks, Examinations & Continuous Assessment Portal</p>
+        </div>
+      </a>
+
+      <div class="header-nav-right">
+        <div class="user-pill">
+          <div class="avatar-circle"><%= (name && name.length > 0) ? name.charAt(0).toUpperCase() : 'S' %></div>
+          <div class="user-meta-text">
+            <span class="user-name-text"><%= name %></span>
+            <span class="user-id-text">Roll: <%= id %></span>
+          </div>
+        </div>
+
+        <button class="menu-toggle-btn" onclick="toggleDrawer()" title="Open Navigation Menu">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Screen Content Canvas -->
+  <main class="screen-wrapper">
+
+    <!-- Hero Banner -->
+    <section class="marks-hero-banner">
+      <div class="hero-titles">
+        <h1>Evaluation & <span class="gradient-text">Examination Scorecard</span></h1>
+        <p>Continuous assessment marks, tests & university finals for <strong><%= name %></strong></p>
+      </div>
+
+      <div class="hero-action-chips">
+        <div class="chip-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+          <span>Roll No: <%= id %></span>
+        </div>
+        <button type="button" class="btn-print" onclick="window.print()">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Print Marks Report</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Pre-calculate Stats -->
+    <% 
+      const subjectKeys = Object.keys(groupedMarks || {});
+      let totalScoredAll = 0;
+      let totalPossibleAll = 0;
+      let totalTestsAll = 0;
+
+      subjectKeys.forEach(subj => {
+        const entries = groupedMarks[subj] || [];
+        entries.forEach(e => {
+          if (e && e.marks != null && e.totalMarks != null) {
+            totalScoredAll += parseFloat(e.marks);
+            totalPossibleAll += parseFloat(e.totalMarks);
+            totalTestsAll++;
+          }
+        });
+      });
+
+      const aggregatePercentage = totalPossibleAll === 0 ? 0 : Math.round((totalScoredAll / totalPossibleAll) * 100);
+    %>
+
+    <!-- 4-Card Overview Stats Strip -->
+    <section class="metrics-row">
+      <div class="metric-panel">
+        <div class="metric-icon-bubble purple">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="metric-content-box">
+          <span class="metric-main-val">
+            <%= totalPossibleAll === 0 ? 'Evaluating' : aggregatePercentage + '%' %>
+          </span>
+          <span class="metric-sub-title">Aggregate Percentage</span>
+        </div>
+      </div>
+
+      <div class="metric-panel">
+        <div class="metric-icon-bubble emerald">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="metric-content-box">
+          <span class="metric-main-val" style="color: var(--emerald-400);">
+            <%= totalPossibleAll === 0 ? 'N/A' : (aggregatePercentage >= 75 ? 'Distinction' : (aggregatePercentage >= 60 ? 'First Class' : 'Pass')) %>
+          </span>
+          <span class="metric-sub-title">Performance Standing</span>
+        </div>
+      </div>
+
+      <div class="metric-panel">
+        <div class="metric-icon-bubble cyan">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        </div>
+        <div class="metric-content-box">
+          <span class="metric-main-val"><%= subjectKeys.length %> Courses</span>
+          <span class="metric-sub-title">Enrolled Subjects</span>
+        </div>
+      </div>
+
+      <div class="metric-panel">
+        <div class="metric-icon-bubble amber">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div class="metric-content-box">
+          <span class="metric-main-val"><%= totalTestsAll %> Assessed</span>
+          <span class="metric-sub-title">Scored Evaluations</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content: When Marks Are Present VS When In Progress (Empty State Hub) -->
+    <% if (subjectKeys.length === 0 || totalTestsAll === 0) { %>
+      <!-- Evaluation In Progress Roadmap (Screen-Filling Hub) -->
+      <section class="evaluation-roadmap-card">
+        
+        <div class="roadmap-hero-notice">
+          <div class="notice-icon-box">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div class="notice-text">
+            <h2>Spring Term 2026 Evaluation In Progress</h2>
+            <p>
+              Internal cycle assessments, laboratory practicals, and mid-term examination answer sheets are currently undergoing grading and moderation by the Academic Evaluation Committee. Marks will appear in real-time as individual departments publish scores.
+            </p>
+          </div>
+        </div>
+
+        <!-- 3 Milestone Cards -->
+        <div>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: #ffffff; margin-bottom: 14px;">Evaluation Milestones & Schedule</h3>
+          <div class="milestones-strip">
+            <div class="milestone-tile">
+              <div class="milestone-tile-header">
+                <span class="milestone-badge completed">Phase 1 • Concluded</span>
+                <span class="milestone-step-num">01</span>
+              </div>
+              <h4>Internal Assessment 1</h4>
+              <p>Continuous cycle test 1 and classroom assignments. 25% course weightage.</p>
+            </div>
+
+            <div class="milestone-tile" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.04);">
+              <div class="milestone-tile-header">
+                <span class="milestone-badge evaluating">Phase 2 • Active Moderation</span>
+                <span class="milestone-step-num">02</span>
+              </div>
+              <h4>Mid-Term Examinations</h4>
+              <p>Departmental theoretical tests & laboratory viva. 25% course weightage.</p>
+            </div>
+
+            <div class="milestone-tile">
+              <div class="milestone-tile-header">
+                <span class="milestone-badge upcoming">Phase 3 • Scheduled</span>
+                <span class="milestone-step-num">03</span>
+              </div>
+              <h4>University Finals</h4>
+              <p>Comprehensive end-semester university examinations. 50% course weightage.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- GPA Grading Scale Guide -->
+        <div class="gpa-scale-strip">
+          <span class="gpa-scale-title">Institutional Grading & Point Scale</span>
+          <div class="gpa-ranks-row">
+            <div class="gpa-rank-box">
+              <span class="gpa-letter" style="color: var(--emerald-400);">O (Outstanding)</span>
+              <span class="gpa-range">90% — 100% (10.0 GP)</span>
+            </div>
+            <div class="gpa-rank-box">
+              <span class="gpa-letter" style="color: var(--cyan-400);">A+ (Excellent)</span>
+              <span class="gpa-range">80% — 89% (9.0 GP)</span>
+            </div>
+            <div class="gpa-rank-box">
+              <span class="gpa-letter" style="color: var(--indigo-500);">A (Very Good)</span>
+              <span class="gpa-range">70% — 79% (8.0 GP)</span>
+            </div>
+            <div class="gpa-rank-box">
+              <span class="gpa-letter" style="color: var(--amber-400);">B+ (Good)</span>
+              <span class="gpa-range">60% — 69% (7.0 GP)</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    <% } else { %>
+      <!-- Render Subject Scorecards Grid -->
+      <section class="scorecard-grid">
+        <% subjectKeys.forEach(subject => {
+          let total = 0, maxTotal = 0;
+          const entries = groupedMarks[subject] || [];
+          if (entries.length === 0) return;
+        %>
+          <div class="subject-scorecard">
+            <div class="scorecard-header">
+              <h3><%= subject %></h3>
+              <span class="subject-badge-pill">Evaluated Course</span>
+            </div>
+
+            <div class="assessments-table">
+              <% entries.forEach(entry => {
+                if (!entry || !entry.test_name || entry.marks == null || entry.totalMarks == null) return;
+                total += parseFloat(entry.marks);
+                maxTotal += parseFloat(entry.totalMarks);
+              %>
+                <div class="assessment-entry-row">
+                  <div class="test-name-group">
+                    <span class="test-bullet-dot"></span>
+                    <span class="test-name-text"><%= entry.test_name %></span>
+                  </div>
+
+                  <div class="test-score-chips">
+                    <span class="score-chip-scored"><%= entry.marks %></span>
+                    <span class="score-chip-max">/ <%= entry.totalMarks %></span>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+
+            <div class="scorecard-total-footer">
+              <span class="total-footer-label">Course Aggregate</span>
+              <div class="total-footer-score">
+                <span class="total-footer-scored"><%= total.toFixed(1) %></span>
+                <span class="total-footer-max">/ <%= maxTotal %></span>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </section>
+    <% } %>
+
+  </main>
+
+  <!-- Modern Floating Executive Capsule Dock -->
+  <nav class="capsule-dock">
+    <form action="/student-profile" method="GET">
+      <input type="hidden" name="name" value="<%= name %>">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Home</span>
+      </button>
+    </form>
+
+    <form action="/student-dashboard" method="POST">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        <span>Attendance</span>
+      </button>
+    </form>
+
+    <form action="/student-marks" method="POST">
+      <input type="hidden" name="studentId" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn active">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span>Marks</span>
+      </button>
+    </form>
+
+    <form action="/view-timetable" method="POST">
+      <input type="hidden" name="studentName" value="<%= name %>">
+      <input type="hidden" name="id" value="<%= id %>">
+      <input type="hidden" name="password" value="<%= password %>">
+      <button type="submit" class="dock-pill-btn">
+        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>Timetable</span>
+      </button>
+    </form>
+  </nav>
+
+  <!-- Slide-Over Navigation Drawer -->
+  <div class="drawer-scrim" id="drawerScrim" onclick="toggleDrawer()">
+    <div class="drawer-sheet" onclick="event.stopPropagation()">
+      <div class="drawer-sheet-top">
+        <span class="drawer-sheet-title">SRM Academia Navigation</span>
+        <button class="drawer-close-icon" onclick="toggleDrawer()">✕</button>
+      </div>
+
+      <div class="drawer-nav-list">
+        <form action="/student-info" method="POST">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="name" value="<%= name %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>My Student Profile</span>
+          </button>
+        </form>
+
+        <form action="/student-dashboard" method="POST">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            <span>Attendance Status</span>
+          </button>
+        </form>
+
+        <form action="/student-marks" method="POST">
+          <input type="hidden" name="studentId" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            <span>Marks & Evaluation</span>
+          </button>
+        </form>
+
+        <form action="/view-timetable" method="POST">
+          <input type="hidden" name="studentName" value="<%= name %>">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <span>Timetable Schedule</span>
+          </button>
+        </form>
+
+        <form action="/view-internships" method="GET">
+          <input type="hidden" name="name" value="<%= name %>">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>Internship Board</span>
+          </button>
+        </form>
+
+        <form action="/view-hackathons" method="GET">
+          <input type="hidden" name="id" value="<%= id %>">
+          <input type="hidden" name="password" value="<%= password %>">
+          <input type="hidden" name="name" value="<%= name %>">
+          <button type="submit" class="drawer-nav-item">
+            <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span>Hackathons</span>
+          </button>
+        </form>
+
+        <a href="chat.html" class="drawer-nav-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>SRM GPT AI</span>
+        </a>
+
+        <a href="/login-page" class="drawer-nav-item" style="color: #fda4af; margin-top: 14px; border-color: rgba(244, 63, 94, 0.2);">
+          <svg style="color: #fda4af;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span>Log Out</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDrawer() {
+      const scrim = document.getElementById("drawerScrim");
+      scrim.classList.toggle("open");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mark Attendance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      color: #fff;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .student {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .student label {
+      flex: 1;
+      font-size: 18px;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.5);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #fff;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Mark Attendance</h2>
+
+  <form action="/save-attendance" method="POST">
+    <input type="text" name="subject" placeholder="Enter Subject Name" required>
+
+    <% students.forEach(student => { %>
+      <div class="student">
+        <label>
+          <%= student %>
+          <input type="checkbox" name="present[]" value="<%= student %>">
+        </label>
+        <input type="hidden" name="allStudents[]" value="<%= student %>">
+      </div>
+    <% }); %>
+
+    <button type="submit">Submit Attendance</button>
+  </form>
+
+</body>
+</html>

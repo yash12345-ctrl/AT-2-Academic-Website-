@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Enter Student Marks Details</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .input-group, .info-group {
+      margin-bottom: 15px;
+    }
+
+    input[type="text"], input[type="password"] {
+      padding: 10px;
+      width: 300px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px 5px 0 0;
+      border: none;
+      border-radius: 5px;
+      background-color: #ffffff;
+      color: #333;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h2>Enter Student Marks Details</h2>
+
+  <form id="marksStudentForm" method="POST" action="/save-marks-students">
+    <div id="marksStudentInputs">
+      <div class="input-group">
+        <input type="text" name="marksStudents[]" placeholder="Enter Student Name" required>
+      </div>
+    </div>
+
+    <button type="button" onclick="addMoreMarksStudent()">Add More</button>
+
+    <div class="info-group">
+      <input type="text" name="marksClass" placeholder="Enter Class Name" required>
+    </div>
+    <div class="info-group">
+      <input type="text" name="marksId" placeholder="Enter Marks ID" required>
+    </div>
+    <div class="info-group">
+      <input type="password" name="marksPassword" placeholder="Enter Marks Password" required>
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    function addMoreMarksStudent() {
+      const div = document.createElement('div');
+      div.className = 'input-group';
+      div.innerHTML = '<input type="text" name="marksStudents[]" placeholder="Enter Student Name" required>';
+      document.getElementById('marksStudentInputs').appendChild(div);
+    }
+  </script>
+</body>
+</html>

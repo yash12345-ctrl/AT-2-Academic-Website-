@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>
+    <%= name %>'s Dashboard
+  </title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top left, #ff5ec4, #a362f9, #7f9df5, #70e7f2);
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 40px;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+
+    form {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .input-field {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    .subject-card {
+      background: white;
+      color: black;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      margin: 20px auto;
+      width: 90%;
+      max-width: 500px;
+      transition: transform 0.3s ease;
+    }
+
+    .subject-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .student-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .message {
+      font-size: 16px;
+      color: #444;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #fff;
+      color: #333;
+    }
+
+    button:hover {
+      background: #ddd;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Welcome, <%= name %>!</h1>
+  <% if (typeof success !=='undefined' && success) { %>
+    <div class="subject-card" style="background: #d4edda; color: #155724; border-left: 6px solid #28a745;">
+      ✅ Marks for "<%= subject %>" - "<%= testName %>" uploaded successfully!
+    </div>
+    <% } %>
+
+
+      <% if (students.length===0) { %>
+        <div class="subject-card">
+          <div class="message">No student data available.</div>
+        </div>
+        <% } else { %>
+          <form action="/submit-marks" method="POST">
+            <!-- Hidden teacher ID -->
+            <input type="hidden" name="teacherId" value="<%= name %>">
+
+            <!-- ✅ New Input: Test Name -->
+            <div class="input-field">
+              <input type="text" name="testName" placeholder="Enter Test Name (e.g. Midterm, Quiz 1)" required>
+            </div>
+
+            <div class="input-field">
+              <input type="text" name="subject" placeholder="Enter Subject Name" required>
+            </div>
+
+            <div class="input-field">
+              <input type="number" name="totalMarks" placeholder="Enter Total Marks" required>
+            </div>
+
+            <% students.forEach(student=> { %>
+              <div class="subject-card">
+                <div class="student-name">
+                  <%= student.name %> (<%= student.id %>)
+                </div>
+                <input type="number" name="marks[<%= student.id %>]" placeholder="Enter Marks for <%= student.name %>"
+                  required>
+              </div>
+              <% }) %>
+
+                <div style="text-align: center;">
+                  <button type="submit">Submit Marks</button>
+                </div>
+          </form>
+          <% } %>
+
+</body>
+
+</html>
