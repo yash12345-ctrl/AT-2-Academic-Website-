@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎓 SRM Academia & Academic Administration Portal
+# 🎓 Demo SRM Academia & Academic Administration Portal
 ### *Enterprise Full-Stack Academic Portal, Attendance Intelligence, Dynamic Cyclic Day-Order Timetable & Career Hub*
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-at--2--academic--website.onrender.com-4f46e5?style=for-the-badge&logo=render&logoColor=white)](https://at-2-academic-website.onrender.com)
@@ -63,35 +63,7 @@ Experience the platform live on Render without manual registration:
 - **One-Click Attendance Logging**: Batch roster checkboxes for marking student presence per lecture hour.
 - **Marks Upload Portal**: Batch entry interface for subject teachers to record student assessments.
 
----
 
-## 🏗️ System Architecture
-
-```mermaid
-flowchart TD
-    Client["🌐 Client Browser\n(Desktop / Mobile)"]
-    
-    subgraph AppServer ["🚀 Express Application Server (Node.js)"]
-        AuthMiddleware["🛡️ Cookie Session & Auth Helper\n(PRG Pattern + SameSite Lax)"]
-        Routes["📡 Unified REST & EJS Routes\n(/login, /student-dashboard, /student-marks)"]
-        AIEngine["🤖 AI Tutor Service\n(Ollama phi3 / Fallback Stream)"]
-        HealthEndpoint["💓 /health & /healthz\n(UptimeRobot 24/7 Keep-Alive)"]
-    end
-
-    subgraph DualDB ["💾 Dual-Database Adapter Layer (db.js)"]
-        Adapter{"DATABASE_URL\nDefined?"}
-        NeonPG[("🐘 Neon Cloud Serverless\nPostgreSQL (Pooled SSL)")]
-        LocalSQLite[("📁 Local Embedded\nSQLite3 (student.db)")]
-    end
-
-    UptimeRobot["⏰ UptimeRobot Monitor\n(Pings every 12 min)"] --> HealthEndpoint
-    Client --> AuthMiddleware
-    AuthMiddleware --> Routes
-    Routes --> AIEngine
-    Routes --> DualDB
-    Adapter -- "Production" --> NeonPG
-    Adapter -- "Local Dev" --> LocalSQLite
-```
 
 ---
 
