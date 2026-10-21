@@ -35,6 +35,12 @@ if (isPostgres) {
         converted += ' ON CONFLICT DO NOTHING';
       }
     }
+    // Auto-quote mixed-case column names for PostgreSQL
+    converted = converted.replace(/(?<!")\btotalMarks\b(?!")/g, '"totalMarks"');
+    converted = converted.replace(/(?<!")\bclassName\b(?!")/g, '"className"');
+    converted = converted.replace(/(?<!")\bcompanyName\b(?!")/g, '"companyName"');
+    converted = converted.replace(/(?<!")\bhackathonName\b(?!")/g, '"hackathonName"');
+    converted = converted.replace(/(?<!")\bcollegeName\b(?!")/g, '"collegeName"');
     return converted;
   }
 

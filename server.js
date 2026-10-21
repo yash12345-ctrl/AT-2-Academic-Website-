@@ -465,7 +465,7 @@ app.post('/student-marks', (req, res) => {
 
     // Step 2: Get marks from marks_scores
     const query = `
-        SELECT subject, test_name, marks, totalMarks
+        SELECT subject, test_name, marks, "totalMarks"
         FROM marks_scores
         WHERE student_id = ?
         ORDER BY subject, test_name
