@@ -134,6 +134,18 @@ function convertToMinutes(timeRange) {
 
 // -------------------- ROUTES -------------------- //
 
+// ✅ Health check route for UptimeRobot / ping monitoring to keep Render alive 24/7
+app.get(['/health', '/healthz'], (req, res) => {
+  const uptimeSeconds = process.uptime();
+  res.status(200).json({
+    status: 'ok',
+    service: 'Academic Website Server',
+    message: 'Server is running and healthy',
+    timestamp: new Date().toISOString(),
+    uptime: `${Math.floor(uptimeSeconds / 60)}m ${Math.floor(uptimeSeconds % 60)}s`
+  });
+});
+
 // ✅ Root route: Serve login page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
