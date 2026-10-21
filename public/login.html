@@ -735,8 +735,9 @@
         }
       }
 
-      // If running on a different port like Live Server (5500), make sure links and form point to port 3000
-      if (window.location.port !== '3000') {
+      // Only point to localhost:3000 if explicitly running from file:// or local Live Server (port 5500)
+      const isLocalLiveServer = window.location.protocol === 'file:' || window.location.port === '5500';
+      if (isLocalLiveServer) {
         const loginForm = document.getElementById('loginForm');
         if (loginForm) {
           loginForm.action = 'http://localhost:3000/login';

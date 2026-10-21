@@ -1158,13 +1158,14 @@
       showToast(`Loaded ${data.length} subjects from "${previewName}"`, "success");
     }
 
-    // Determine API endpoint base (handles Live Server port 5500 vs Express port 3000)
-    const API_BASE = window.location.port === '3000' ? '' : 'http://localhost:3000';
+    // Determine API endpoint base (only points to localhost:3000 if opened via file:// or Live Server port 5500)
+    const isLocalLiveServer = window.location.protocol === 'file:' || window.location.port === '5500';
+    const API_BASE = isLocalLiveServer ? 'http://localhost:3000' : '';
 
-    // Update navigation links if running on a different port like Live Server
+    // Update navigation links only if explicitly running on local Live Server / file:
     window.addEventListener('DOMContentLoaded', () => {
       const loginLink = document.getElementById('loginLink');
-      if (loginLink && API_BASE) {
+      if (loginLink && isLocalLiveServer) {
         loginLink.href = `${API_BASE}/login-page`;
       }
     });
